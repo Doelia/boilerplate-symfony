@@ -42,10 +42,6 @@ Si c'est une app hybride, spécifier "format: json" pour les routes API :
 #[Route('/api', format: 'json')]
 ```
 
-## TODO
-- Logs (et deprecated)
-- Phpunit + phpstorm
-
 ###################################################################
 
 # // Nom du projet
