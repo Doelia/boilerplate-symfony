@@ -1,0 +1,9 @@
+services:
+
+  app:
+    build:
+      context: ../..
+      dockerfile: .cloud/Dockerfile
+    ports:
+      - 8000:80
+    tty: true

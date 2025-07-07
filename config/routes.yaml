@@ -1,0 +1,8 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+    # Uncomment to show error as JSON instead of Symfony default HTML error page
+    # format: json
