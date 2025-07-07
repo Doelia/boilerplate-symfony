@@ -13,7 +13,7 @@
 
 ## Installation
 ```
-git clone https://github.com/doelia/sf-boilterplate.git nom-du-projet
+git clone https://github.com/doelia/boilerplate-symfony.git nom-du-projet
 cd nom-du-projet
 rm -rf .git
 git init
