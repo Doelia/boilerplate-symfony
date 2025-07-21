@@ -17,7 +17,7 @@ class DebugIpController extends AbstractController
             'SERVER.REMOTE_ADDR' => $_SERVER['REMOTE_ADDR'] ?? '',
             'SERVER.HTTP_CF_CONNECTING_IP' => $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '',
             'SERVER.HTTP_X_FORWARDED_FOR' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
-            'SERVER.PORT' => $_SERVER['SERVER_PORT'],
+            'SERVER.PORT' => $_SERVER['SERVER_PORT'] ?? '',
             'SERVER.HTTPS' => $_SERVER['HTTPS'] ?? '',
 
             '$request.getClientIp()' => $request->getClientIp(),

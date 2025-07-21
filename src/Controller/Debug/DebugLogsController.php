@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class DebugLogsController extends AbstractController
 {
     #[Route('/debug/log-info')]
-    public function log_info(LoggerInterface $logger): JsonResponse
+    public function logInfo(LoggerInterface $logger): JsonResponse
     {
         $logger->debug("debug_info/debug");
         $logger->info("debug_info/info");
@@ -22,7 +22,7 @@ class DebugLogsController extends AbstractController
     }
 
     #[Route('/debug/log-error')]
-    public function log_error(LoggerInterface $logger): JsonResponse
+    public function logError(LoggerInterface $logger): JsonResponse
     {
         $logger->debug("debug_error/debug");
         $logger->info("debug_error/info");
@@ -31,7 +31,7 @@ class DebugLogsController extends AbstractController
     }
 
     #[Route('/debug/log-deprecated')]
-    public function log_deprecated(LoggerInterface $logger): JsonResponse
+    public function logDeprecated(LoggerInterface $logger): JsonResponse
     {
         @trigger_error("This is a deprecated message", E_USER_DEPRECATED);
         $logger->error("log_deprecated/error");
