@@ -8,7 +8,6 @@ use Attribute;
 class HttpTest
 {
     public const FAKE_UUID = '00000000-0000-0000-0000-000000000000';
-
     public function __construct(
         public array $pathParams = [], // Paramètres pour remplacer les placeholder en {param} dans la route symfony
         public array $queryParams = [], // Paramètres GET de type ?query=value
@@ -17,6 +16,10 @@ class HttpTest
         public ?string $preRequestSQL = null,
         public array $json = [],
         public int $status = 200,
+        public ?array $basicAuth = null, // Authentification basic [username, password],
+        // Ajouter des headers supplémentaires
+        // Exemple: ['HTTP_AUTHORIZATION' => 'Token xxxxx']
+        public ?array $headers = null,
     ) {
     }
 }

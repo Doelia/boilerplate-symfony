@@ -4,6 +4,7 @@ namespace App\Tests\HttpTests;
 
 use App\Attributes\HttpTest;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use RecursiveIteratorIterator;
 use ReflectionMethod;
@@ -27,16 +28,9 @@ class AttributeHttpTest extends WebTestCase
 
         // 4) Exécuter la requête
         if ($request['json'] !== null) {
-            $client->request(
-                $request['method'],
-                $request['url'],
-                [],
-                [],
-                ['CONTENT_TYPE' => 'application/json'],
-                json_encode($request['json'])
-            );
+            $client->request($request['method'], $request['url'], [], [], $request['headers'], json_encode($request['json']) ?: null);
         } else {
-            $client->request($request['method'], $request['url']);
+            $client->request($request['method'], $request['url'], [], [], $request['headers']);
         }
 
         // 5) Vérifier le statut
@@ -67,7 +61,7 @@ class AttributeHttpTest extends WebTestCase
                 continue;
             }
 
-            if (!str_contains(file_get_contents($file->getPathname()), '#[HttpTest')) {
+            if (!str_contains(file_get_contents($file->getPathname()) ?: '', '#[HttpTest')) {
                 continue;
             }
 
@@ -87,7 +81,7 @@ class AttributeHttpTest extends WebTestCase
         }
     }
 
-    private function executePreRequestSql(HttpTest $testAttr, $client): void
+    private function executePreRequestSql(HttpTest $testAttr, KernelBrowser $client): void
     {
         if (empty($testAttr->preRequestSQL)) {
             return;
@@ -97,7 +91,7 @@ class AttributeHttpTest extends WebTestCase
         $client->getContainer()->get('doctrine')->getConnection()->executeStatement($sql);
     }
 
-    private function executePreTest(HttpTest $testAttr, $client): ?array
+    private function executePreTest(HttpTest $testAttr, KernelBrowser $client): ?array
     {
         if (empty($testAttr->preTest)) {
             return null;
@@ -108,16 +102,9 @@ class AttributeHttpTest extends WebTestCase
         $preRequest = $this->buildRequest($preMethod, $preAttr);
 
         if ($preRequest['json'] !== null) {
-            $client->request(
-                $preRequest['method'],
-                $preRequest['url'],
-                [],
-                [],
-                ['CONTENT_TYPE' => 'application/json'],
-                json_encode($preRequest['json'])
-            );
+            $client->request($preRequest['method'], $preRequest['url'], [], [], $preRequest['headers'], json_encode($preRequest['json']) ?: null);
         } else {
-            $client->request($preRequest['method'], $preRequest['url']);
+            $client->request($preRequest['method'], $preRequest['url'], [], [], $preRequest['headers']);
         }
 
         if (!$client->getResponse()->isSuccessful()) {
@@ -131,7 +118,7 @@ class AttributeHttpTest extends WebTestCase
             ));
         }
 
-        return json_decode($client->getResponse()->getContent(), true);
+        return json_decode($client->getResponse()->getContent(), true) ?: null;
     }
 
     private function getPreTestMethodAndAttr(string $name): array
@@ -194,10 +181,28 @@ class AttributeHttpTest extends WebTestCase
         // 7) Déterminer la méthode HTTP
         $httpMethod = $methodRouteAttr[0]->newInstance()->getMethods()[0] ?? 'GET';
 
+        $headers = [
+            'HTTP_CONTENT_TYPE' => 'application/json',
+        ];
+
+        if ($testAttr->basicAuth !== null) {
+            [$username, $password] = $testAttr->basicAuth;
+            $headers['PHP_AUTH_USER'] = $username;
+            $headers['PHP_AUTH_PW'] = $password;
+            $headers['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode("$username:$password");
+        }
+
+        if ($testAttr->headers !== null) {
+            foreach ($testAttr->headers as $key => $value) {
+                $headers[$key] = $value;
+            }
+        }
+
         return [
             'method' => $httpMethod,
             'url'    => $url,
             'json'   => $testAttr->json,
+            'headers' => $headers,
         ];
     }
 

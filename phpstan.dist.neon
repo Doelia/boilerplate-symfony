@@ -7,3 +7,5 @@ parameters:
         # Je ne veux pas reposer sur les annotations de type array{…}
         -
             identifier: missingType.iterableValue
+        -
+            identifier: missingType.generics
