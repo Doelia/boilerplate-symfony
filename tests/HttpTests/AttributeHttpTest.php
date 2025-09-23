@@ -3,6 +3,7 @@
 namespace App\Tests\HttpTests;
 
 use App\Attributes\HttpTest;
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -18,13 +19,13 @@ class AttributeHttpTest extends WebTestCase
         $client = self::createClient();
 
         // 1) Exécuter éventuel SQL avant
-        $this->executePreRequestSql($testAttr, $client);
+        $preSqlRequest_response = $this->executePreRequestSql($testAttr, $client);
 
         // 2) Exécuter éventuel pré-test
-        $preRequest_response = $this->executePreTest($testAttr, $client);
+        $preTestRequest_response = $this->executePreTest($testAttr, $client);
 
         // 3) Construire la requête finale
-        $request = $this->buildRequest($method, $testAttr, $preRequest_response);
+        $request = $this->buildRequest($method, $testAttr, $preTestRequest_response, $preSqlRequest_response);
 
         // 4) Exécuter la requête
         if ($request['json'] !== null) {
@@ -81,14 +82,20 @@ class AttributeHttpTest extends WebTestCase
         }
     }
 
-    private function executePreRequestSql(HttpTest $testAttr, KernelBrowser $client): void
+    private function executePreRequestSql(HttpTest $testAttr, KernelBrowser $client): array
     {
         if (empty($testAttr->preRequestSQL)) {
-            return;
+            return [];
         }
 
         $sql = $testAttr->preRequestSQL;
-        $client->getContainer()->get('doctrine')->getConnection()->executeStatement($sql);
+
+        /**
+         * @var Connection $db
+         */
+        $db = $client->getContainer()->get('doctrine')->getConnection();
+
+        return $db->fetchAllAssociative($sql);
     }
 
     private function executePreTest(HttpTest $testAttr, KernelBrowser $client): ?array
@@ -134,8 +141,9 @@ class AttributeHttpTest extends WebTestCase
 
     private function buildRequest(
         ReflectionMethod $method,
-        HttpTest $testAttr,
-        ?array $preRequest_response = null
+        HttpTest         $testAttr,
+        ?array           $preTestRequest_response = null,
+        ?array           $preSqlRequest_response = null,
     ): array {
 
         // 1) Récupérer le préfixe de la classe s'il existe
@@ -174,8 +182,11 @@ class AttributeHttpTest extends WebTestCase
         }
 
         // 6) Remplacer les placeholders dynamiques
-        if ($preRequest_response !== null) {
-            $url = $this->replacePlaceholders($url, ['preRequest' => $preRequest_response]);
+        if ($preTestRequest_response !== null) {
+            $url = $this->replacePlaceholders($url, ['preRequest' => $preTestRequest_response]);
+        }
+        if ($preSqlRequest_response !== null) {
+            $url = $this->replacePlaceholders($url, ['preRequestSql' => $preSqlRequest_response]);
         }
 
         // 7) Déterminer la méthode HTTP
@@ -218,7 +229,7 @@ class AttributeHttpTest extends WebTestCase
                 if (is_array($value) && array_key_exists($part, $value)) {
                     $value = $value[$part];
                 } else {
-                    throw new \RuntimeException("Placeholder {{$path}} not found in context: " . json_encode($context));
+                    throw new \RuntimeException("Placeholder {{{$path}}} not found in context: " . json_encode($context));
                 }
             }
 
