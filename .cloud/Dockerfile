@@ -29,20 +29,28 @@ COPY .env .env
 
 RUN php bin/console cache:clear
 
-# Tests syntax
-COPY phpcs.xml.dist phpcs.xml.dist
-RUN ./vendor/bin/phpcs src -s
-
-# Check PhpStan
-COPY phpstan.dist.neon phpstan.dist.neon
-RUN ./vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=table
-
 RUN chmod 755 -R .
 RUN chmod 777 -R var/
 
 ##############################################################################################$
+### STAGE DE VÉRIFICATION
 
-FROM dunglas/frankenphp:php8.4-alpine
+FROM build_php AS check
+
+COPY tests tests
+COPY phpcs.xml.dist phpcs.xml.dist
+COPY phpstan.dist.neon phpstan.dist.neon
+
+# Lint / Analyse statique
+RUN ./vendor/bin/phpcs src -s
+RUN ./vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=table
+
+# Marqueur pour forcer la construction de ce stage si référencé
+RUN echo "ok" > /check.ok
+
+##############################################################################################$
+
+FROM dunglas/frankenphp:php8.4-alpine AS run
 
 RUN install-php-extensions \
     pdo \
@@ -64,3 +72,22 @@ ENV APP_ENV="prod"
 
 HEALTHCHECK --timeout=3s \
   CMD curl -f http://localhost/healthcheck || exit 1
+
+##############################################################################################$
+
+FROM run AS test
+
+RUN install-php-extensions pcov
+
+COPY .env.test .env.test
+COPY tests tests
+COPY phpunit.dist.xml phpunit.dist.xml
+
+##############################################################################################$
+# Default target
+
+FROM run
+
+# Vérification si ce stage est référencé
+COPY --from=check /check.ok /check.ok
+
