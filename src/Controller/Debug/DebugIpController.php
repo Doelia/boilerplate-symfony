@@ -17,7 +17,8 @@ class DebugIpController extends AbstractController
             'SERVER.REMOTE_ADDR' => $_SERVER['REMOTE_ADDR'] ?? '',
             'SERVER.HTTP_CF_CONNECTING_IP' => $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '',
             'SERVER.HTTP_X_FORWARDED_FOR' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
-            'SERVER.PORT' => $_SERVER['SERVER_PORT'] ?? '',
+            'SERVER.SERVER_NAME' => $_SERVER['SERVER_NAME'] ?? '',
+            'SERVER.SERVER_PORT' => $_SERVER['SERVER_PORT'] ?? '',
             'SERVER.HTTPS' => $_SERVER['HTTPS'] ?? '',
 
             '$request.getClientIp()' => $request->getClientIp(),
@@ -28,6 +29,8 @@ class DebugIpController extends AbstractController
             '$request->server->get(REMOTE_ADDR)' => $request->server->get('REMOTE_ADDR'),
             '$request->server->get(SERVER_PORT)' => $request->server->get('SERVER_PORT'),
             '$request->server->get(HTTPS)' => $request->server->get('HTTPS'),
+            '$request->server->get(SERVER_NAME)' => $request->server->get('SERVER_NAME'),
+            '$request->server->get(HOST)' => $request->server->get('HOST'),
 
             '$request->headers->get("CF-Connecting-IP")' => $request->headers->get("CF-Connecting-IP"),
             '$request->headers->get("X-Forwarded-For")' => $request->headers->get("X-Forwarded-For"),
