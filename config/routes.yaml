@@ -9,6 +9,3 @@
 
 controllers:
     resource: routing.controllers
-
-    # Uncomment to show error as JSON instead of Symfony default HTML error page
-    # format: json

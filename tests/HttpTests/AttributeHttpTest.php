@@ -7,14 +7,12 @@ use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use RecursiveIteratorIterator;
-use ReflectionMethod;
 use Symfony\Component\Routing\Attribute\Route;
 
 class AttributeHttpTest extends WebTestCase
 {
     #[DataProvider('provideHttpTests')]
-    public function testHttpTestAttribute(string $className, ReflectionMethod $method, HttpTest $testAttr): void
+    public function testHttpTestAttribute(string $className, \ReflectionMethod $method, HttpTest $testAttr): void
     {
         $client = self::createClient();
 
@@ -28,7 +26,7 @@ class AttributeHttpTest extends WebTestCase
         $request = $this->buildRequest($method, $testAttr, $preTestRequest_response, $preSqlRequest_response);
 
         // 4) Exécuter la requête
-        if ($request['json'] !== null) {
+        if (null !== $request['json']) {
             $client->request($request['method'], $request['url'], [], [], $request['headers'], json_encode($request['json']) ?: null);
         } else {
             $client->request($request['method'], $request['url'], [], [], $request['headers']);
@@ -54,11 +52,11 @@ class AttributeHttpTest extends WebTestCase
 
     public static function provideHttpTests(): iterable
     {
-        $controllerDir = __DIR__ . '/../../src/Controller';
-        $files = new RecursiveIteratorIterator(new \RecursiveDirectoryIterator($controllerDir));
+        $controllerDir = __DIR__.'/../../src/Controller';
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($controllerDir));
 
         foreach ($files as $file) {
-            if (!$file->isFile() || $file->getExtension() !== 'php') {
+            if (!$file->isFile() || 'php' !== $file->getExtension()) {
                 continue;
             }
 
@@ -66,7 +64,7 @@ class AttributeHttpTest extends WebTestCase
                 continue;
             }
 
-            $relativePath = str_replace($controllerDir . '/', '\\App\\Controller\\', $file->getPathname());
+            $relativePath = str_replace($controllerDir.'/', '\\App\\Controller\\', $file->getPathname());
             $className = str_replace(['/', '.php'], ['\\', ''], $relativePath);
             $rc = new \ReflectionClass($className);
 
@@ -76,7 +74,7 @@ class AttributeHttpTest extends WebTestCase
                     $testAttr = $attr->newInstance();
                     $name = $testAttr->name ?: "{$className}::{$method->getName()}.{$idx}";
                     yield $name => [$className, $method, $testAttr];
-                    $idx++;
+                    ++$idx;
                 }
             }
         }
@@ -108,21 +106,14 @@ class AttributeHttpTest extends WebTestCase
 
         $preRequest = $this->buildRequest($preMethod, $preAttr);
 
-        if ($preRequest['json'] !== null) {
+        if (null !== $preRequest['json']) {
             $client->request($preRequest['method'], $preRequest['url'], [], [], $preRequest['headers'], json_encode($preRequest['json']) ?: null);
         } else {
             $client->request($preRequest['method'], $preRequest['url'], [], [], $preRequest['headers']);
         }
 
         if (!$client->getResponse()->isSuccessful()) {
-            throw new \RuntimeException(sprintf(
-                "PreTest '%s' failed: %s %s => HTTP %d\n%s",
-                $testAttr->preTest,
-                $preRequest['method'],
-                $preRequest['url'],
-                $client->getResponse()->getStatusCode(),
-                $client->getResponse()->getContent()
-            ));
+            throw new \RuntimeException(sprintf("PreTest '%s' failed: %s %s => HTTP %d\n%s", $testAttr->preTest, $preRequest['method'], $preRequest['url'], $client->getResponse()->getStatusCode(), $client->getResponse()->getContent()));
         }
 
         return json_decode($client->getResponse()->getContent(), true) ?: null;
@@ -140,70 +131,65 @@ class AttributeHttpTest extends WebTestCase
     }
 
     private function buildRequest(
-        ReflectionMethod $method,
-        HttpTest         $testAttr,
-        ?array           $preTestRequest_response = null,
-        ?array           $preSqlRequest_response = null,
+        \ReflectionMethod $method,
+        HttpTest $testAttr,
+        ?array $preTestRequest_response = null,
+        ?array $preSqlRequest_response = null,
     ): array {
-
         // 1) Récupérer le préfixe de la classe s'il existe
         $classRouteAttr = $method->getDeclaringClass()->getAttributes(Route::class);
         $classPath = '';
         if (!empty($classRouteAttr)) {
             $routeInstance = $classRouteAttr[0]->newInstance();
-            $path = $routeInstance->getPath();
-            $classPath = $path !== null ? rtrim($path, '/') : '';
+            $path = $routeInstance->path;
+            $classPath = null !== $path ? rtrim($path, '/') : '';
         }
 
         // 2) Récupérer la route de la méthode
         $methodRouteAttr = $method->getAttributes(Route::class);
 
         if (empty($methodRouteAttr)) {
-            throw new \RuntimeException(sprintf(
-                "No #[Route] found on method %s::%s",
-                $method->getDeclaringClass()->getName(),
-                $method->getName()
-            ));
+            throw new \RuntimeException(sprintf('No #[Route] found on method %s::%s', $method->getDeclaringClass()->getName(), $method->getName()));
         }
-        $methodPath = $methodRouteAttr[0]->newInstance()->getPath();
-        $methodPath = '/' . ltrim($methodPath, '/');
+        $methodPath = $methodRouteAttr[0]->newInstance()->path;
+        $methodPath = '/'.ltrim($methodPath, '/');
 
         // 3) Concaténer
-        $url = $classPath . $methodPath;
+        $url = $classPath.$methodPath;
 
         // 4) Remplacer les paramètres de chemin
         foreach ($testAttr->pathParams as $key => $value) {
-            $url = str_replace('{' . $key . '}', $value, $url);
+            $url = str_replace('{'.$key.'}', $value, $url);
         }
 
         // 5) Ajouter les query params
         foreach ($testAttr->queryParams as $key => $value) {
-            $url .= (strpos($url, '?') === false ? '?' : '&') . urlencode($key) . '=' . urlencode($value);
+            $url .= (false === strpos($url, '?') ? '?' : '&').urlencode($key).'='.urlencode($value);
         }
 
         // 6) Remplacer les placeholders dynamiques
-        if ($preTestRequest_response !== null) {
+        if (null !== $preTestRequest_response) {
             $url = $this->replacePlaceholders($url, ['preRequest' => $preTestRequest_response]);
         }
-        if ($preSqlRequest_response !== null) {
+        if (null !== $preSqlRequest_response) {
             $url = $this->replacePlaceholders($url, ['preRequestSql' => $preSqlRequest_response]);
         }
 
         // 7) Déterminer la méthode HTTP
-        $httpMethod = $methodRouteAttr[0]->newInstance()->getMethods()[0] ?? 'GET';
+        $httpMethod = $methodRouteAttr[0]->newInstance()->methods[0] ?? 'GET';
 
         $headers = [
             'HTTP_CONTENT_TYPE' => 'application/json',
         ];
 
-        if ($testAttr->basicAuth !== null) {
+        if (null !== $testAttr->basicAuth) {
             [$username, $password] = $testAttr->basicAuth;
             $headers['PHP_AUTH_USER'] = $username;
             $headers['PHP_AUTH_PW'] = $password;
-            $headers['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode("$username:$password");
+            $headers['HTTP_AUTHORIZATION'] = 'Basic '.base64_encode("$username:$password");
         }
 
-        if ($testAttr->headers !== null) {
+        if (null !== $testAttr->headers) {
             foreach ($testAttr->headers as $key => $value) {
                 $headers[$key] = $value;
             }
@@ -211,12 +197,11 @@ class AttributeHttpTest extends WebTestCase
 
         return [
             'method' => $httpMethod,
-            'url'    => $url,
-            'json'   => $testAttr->json,
+            'url' => $url,
+            'json' => $testAttr->json,
             'headers' => $headers,
         ];
     }
-
 
     private function replacePlaceholders(string $template, array $context): string
     {
@@ -229,7 +214,7 @@ class AttributeHttpTest extends WebTestCase
                 if (is_array($value) && array_key_exists($part, $value)) {
                     $value = $value[$part];
                 } else {
-                    throw new \RuntimeException("Placeholder {{{$path}}} not found in context: " . json_encode($context));
+                    throw new \RuntimeException("Placeholder {{{$path}}} not found in context: ".json_encode($context));
                 }
             }
 
