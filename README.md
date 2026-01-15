@@ -79,6 +79,9 @@ Puis naviguer sur http://127.0.0.1/8000
 Tout vérifier (Phpunit, Lint, PHPStan...). - Conseillé avant de commit.
 ```
 composer check
+
+# Fixer les erreurs de code style automatiquement
+vendor/bin/phpcbf src
 ```
 
 #### Phpunit
