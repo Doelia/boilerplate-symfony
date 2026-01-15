@@ -1,6 +1,6 @@
-# Boilerplate Symfony 6.4
+# Boilerplate Symfony 7.4
 
-- SF 6.4 + PHP 8.4
+- SF 7.4 + PHP 8.5
 - FrankenPHP mode worker (avec fix BDD), Docker mode prod
 - Configuration Monolog
 - Modèle Healthcheck
@@ -30,10 +30,8 @@ Si votre projet est une API, vous préférez des erreurs au format JSON plutôt 
 Dans le fichier `config/routes.yaml`, ajouter `format: json` : 
 ```
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+    ...
+    # Uncomment to show error as JSON instead of Symfony default HTML error page
     format: json
 ```
 
@@ -51,8 +49,8 @@ Si c'est une app hybride, spécifier "format: json" pour les routes API :
 ## Utilisation en local
 
 Stack :
-- PHP 8.4
-- Symfony 6.4
+- PHP 8.5
+- Symfony 7.4
 
 Installer :
 ```
@@ -73,6 +71,8 @@ Tester le build/run docker en mode prod :
 cd .cloud/local
 docker compose up --build
 ```
+
+Puis naviguer sur http://127.0.0.1/8000
 
 ### Tests
 

@@ -1,6 +1,6 @@
 FROM node:22 AS node
 
-FROM dunglas/frankenphp:php8.4 AS build_php
+FROM dunglas/frankenphp:php8.5 AS build_php
 
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
@@ -50,7 +50,7 @@ RUN echo "ok" > /check.ok
 
 ##############################################################################################$
 
-FROM dunglas/frankenphp:php8.4-alpine AS run
+FROM dunglas/frankenphp:php8.5-alpine AS run
 
 RUN install-php-extensions \
     pdo \
