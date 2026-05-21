@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(format: 'json')]
 class DebugPhpConfigurationController extends AbstractController
 {
-    #[HttpTest]
+    #[HttpTest(queryParams: ['secret' => 'debugsecret_test'])]
     #[Route("/debug/php-configuration")]
     public function debugPhpConfiguration(): JsonResponse
     {

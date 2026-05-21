@@ -23,6 +23,7 @@ git init
 
 - Vérifier que les dépendances sont sur les dernières versions : `composer outdated --direct`
 - Mettre à jour le composer.lock `composer update`
+- Changer la valeur par défaut de la var d'env `DEBUG_SECRETPASS=xxx` dans le .env
 - Retirer cette partie du README.md et compléter le reste.
  
 ### Formatage des erreurs

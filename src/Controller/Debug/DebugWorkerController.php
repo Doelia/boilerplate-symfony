@@ -13,7 +13,7 @@ class DebugWorkerController extends AbstractController
     public static int $incr = 0;
 
     #[Route("/debug/worker/increment", name: "debug_worker_incr")]
-    #[HttpTest]
+    #[HttpTest(queryParams: ['secret' => 'debugsecret_test'])]
     public function testIncrement(): JsonResponse
     {
         self::$incr++;
