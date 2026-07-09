@@ -67,7 +67,7 @@ Stack :
 - PHP 8.5
 - Symfony 7.4
 
-## Avec docker (Recommandé)
+### Avec docker (Recommandé)
 
 Créer un fichier `.env.local` si besoin d'ajuster des variables du `.env`.
 
@@ -83,7 +83,7 @@ docker compose up
 
 Puis naviguer sur http://127.0.0.1:8000
 
-## Sans docker
+### Sans docker
 
 Installer :
 ```
