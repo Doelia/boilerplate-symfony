@@ -1,0 +1,39 @@
+# docker-compose.yaml optimisé pour le développement en local uniquement.
+# Fichier à supprimer si vous ne choissisez pas Docker pour le travail en local
+
+x-environment: &environment
+    APP_ENV: dev
+    APP_CACHE_ADAPTER: memory
+#    DATABASE_URL: "postgresql://postgres:local@db:5432/postgres?serverVersion=18&charset=utf8"
+
+services:
+
+    app:
+        build:
+            dockerfile: .cloud/Dockerfile
+            target: local
+        environment:
+            <<: *environment
+        ports:
+            - "127.0.0.1:8000:8000"
+        volumes:
+            - .:/app
+
+    # Décommenter si vous utilisez Symfony Messenger, ou supprimer
+#    messenger:
+#        build:
+#            dockerfile: .cloud/Dockerfile
+#            target: local
+#        environment:
+#            <<: *environment
+#        command: php /app/bin/console messenger:consume default -vvv
+#        volumes:
+#            - .:/app
+
+    # Décommenter si besoin d'une BDD, ou supprimer
+#    db:
+#        image: postgres:18
+#        environment:
+#            POSTGRES_PASSWORD: local
+#        ports:
+#            - "5431:5432" # Pour usage en local host docker (ex: DataGrip), utiliser le port 5431

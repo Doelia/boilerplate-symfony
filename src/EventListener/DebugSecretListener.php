@@ -31,7 +31,7 @@ final class DebugSecretListener
             return;
         }
 
-        if (empty($this->debugSecret) || $request->query->get('secret') !== $this->debugSecret) {
+        if (empty($this->debugSecret) || !hash_equals($request->query->get('secret'), $this->debugSecret)) {
             $event->setResponse(new JsonResponse(['error' => 'Forbidden'], 403));
         }
     }

@@ -25,8 +25,11 @@ git init
 - Mettre à jour le composer.lock `composer update`
 - Changer la valeur par défaut de la var d'env `DEBUG_SECRETPASS=xxx` dans le .env
 - Retirer cette partie du README.md et compléter le reste.
+- Choisir un seul mode de fonctionnement en local (docker ou sans docker) et supprimer l'autre partie. Préférer Docker si la stack est complexe (BDD, messenger, cache...), sinon sans docker est plus simple.
+- Supprimez/décommentez les parties du docker-compose.yaml non utilisées
  
 ### Formatage des erreurs
+
 Si votre projet est une API, vous préférez des erreurs au format JSON plutôt que les pages HTML d'erreur de Symfony.
 Dans le fichier `config/routes.yaml`, ajouter `format: json` : 
 ```
@@ -53,6 +56,24 @@ Stack :
 - PHP 8.5
 - Symfony 7.4
 
+## Avec docker (Recommandé)
+
+Créer un fichier `.env.local` si besoin d'ajuster des variables du `.env`.
+
+Composer install :
+```
+docker compose run app composer install
+```
+
+Lancer le serveur:
+```
+docker compose up
+```
+
+Puis naviguer sur http://127.0.0.1:8000
+
+## Sans docker
+
 Installer :
 ```
 composer install
@@ -67,15 +88,9 @@ symfony serve
 APP_RUNTIME="Runtime\\FrankenPhpSymfony\\Runtime" frankenphp php-server --root=public -w public/index.php -l 127.0.0.1:8000 --watch="$(pwd)"
 ```
 
-Tester le build/run docker en mode prod :
-```
-cd .cloud/local
-docker compose up --build
-```
-
-Puis naviguer sur http://127.0.0.1/8000
-
 ### Tests
+
+Si vous utilisez docker, entrez ces commandes après un `docker compose exec app bash`
 
 Tout vérifier (Phpunit, Lint, PHPStan...). - Conseillé avant de commit.
 ```
