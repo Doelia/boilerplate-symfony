@@ -2,8 +2,7 @@
 
 namespace App\Tests\HttpTests;
 
-use App\Attributes\HttpTest;
-use Doctrine\DBAL\Connection;
+use App\Core\Attributes\HttpTest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -52,8 +51,8 @@ class AttributeHttpTest extends WebTestCase
 
     public static function provideHttpTests(): iterable
     {
-        $controllerDir = __DIR__.'/../../src/Controller';
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($controllerDir));
+        $srcDir = __DIR__ . '/../../src';
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($srcDir));
 
         foreach ($files as $file) {
             if (!$file->isFile() || 'php' !== $file->getExtension()) {
@@ -64,7 +63,7 @@ class AttributeHttpTest extends WebTestCase
                 continue;
             }
 
-            $relativePath = str_replace($controllerDir.'/', '\\App\\Controller\\', $file->getPathname());
+            $relativePath = str_replace($srcDir.'/', '\\App\\', $file->getPathname());
             $className = str_replace(['/', '.php'], ['\\', ''], $relativePath);
             $rc = new \ReflectionClass($className);
 
@@ -88,9 +87,6 @@ class AttributeHttpTest extends WebTestCase
 
         $sql = $testAttr->preRequestSQL;
 
-        /**
-         * @var Connection $db
-         */
         $db = $client->getContainer()->get('doctrine')->getConnection();
 
         return $db->fetchAllAssociative($sql);

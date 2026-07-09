@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Debug;
+namespace App\Core\Controller\Debug;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Controller;
+namespace App\Core\Controller;
 
-use App\Attributes\HttpTest;
+use App\Core\Attributes\HttpTest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(format: 'json')]
-class HealthCheckController extends AbstractController
+final class HealthCheckController extends AbstractController
 {
     public function __construct()
     {

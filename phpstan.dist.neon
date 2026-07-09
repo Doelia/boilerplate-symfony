@@ -9,3 +9,10 @@ parameters:
             identifier: missingType.iterableValue
 #        -
 #            identifier: missingType.generics
+
+services:
+    -
+        class: App\Tests\PHPStan\Rules\DomainDependencyUseRule
+        tags:
+            - phpstan.rules.rule
+

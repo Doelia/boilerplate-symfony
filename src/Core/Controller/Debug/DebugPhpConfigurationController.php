@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller\Debug;
+namespace App\Core\Controller\Debug;
 
-use App\Attributes\HttpTest;
+use App\Core\Attributes\HttpTest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;

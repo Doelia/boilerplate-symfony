@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller\Debug;
+namespace App\Core\Controller\Debug;
 
-use App\Attributes\HttpTest;
+use App\Core\Attributes\HttpTest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,7 +13,7 @@ class DebugWorkerController extends AbstractController
     public static int $incr = 0;
 
     #[Route("/debug/worker/increment", name: "debug_worker_incr")]
-    #[HttpTest(queryParams: ['secret' => 'debugsecret_test'])]
+    #[HTtpTest(queryParams: ['secret' => 'debugsecret_test'])]
     public function testIncrement(): JsonResponse
     {
         self::$incr++;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EventListener;
+namespace App\Core\EventListener;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;

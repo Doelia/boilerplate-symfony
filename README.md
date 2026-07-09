@@ -11,6 +11,14 @@
 - Configuration PHPUnit, Tests HTTP via attribut `#[HttpTest]`
 - Configuration PHPStan / Code Sniffer
 
+## Architecture DDD
+
+Le code applicatif sous `src/` est organisé en trois zones :
+
+- `Core/` — composants techniques transverses (debug, event listeners, attributs...), ne connaît aucun domaine métier
+- `Shared/` — code partagé entre plusieurs domaines (services communs...)
+- `Domains/<NomDuDomaine>/` — code propre à chaque domaine métier (ex. `Domains/Main`)
+
 ## Installation
 ```
 git clone https://github.com/doelia/boilerplate-symfony.git nom-du-projet
