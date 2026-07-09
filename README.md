@@ -4,6 +4,7 @@
 - FrankenPHP mode worker (avec fix BDD), Docker mode prod
 - Configuration Monolog
 - Modèle Healthcheck
+- Système de cache pré-configuré
 - Config réseau : CORS, Trusted proxies
 - PHP.ini (Memory limit 1G, Upload 2M)
 - Outils de debug IP / Logs
@@ -18,6 +19,8 @@ Le code applicatif sous `src/` est organisé en trois zones :
 - `Core/` — composants techniques transverses (debug, event listeners, attributs...), ne connaît aucun domaine métier
 - `Shared/` — code partagé entre plusieurs domaines (services communs...)
 - `Domains/<NomDuDomaine>/` — code propre à chaque domaine métier (ex. `Domains/Main`)
+
+Si vous ne voulez pas du DDD, supprimez simplement le dossier Shared et utiliser Domains/Main comme unique domaine.
 
 ## Installation
 ```

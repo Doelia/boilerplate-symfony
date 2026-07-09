@@ -8,6 +8,10 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
 
+    # 'filesystem', 'memory' (en RAM, utile pour en local), ou 'redis'
+    # Note: redis n'est pas encore implémenté
+    app_cache_adapter: '%env(APP_CACHE_ADAPTER)%'
+
 services:
     # default configuration for services in *this* file
     _defaults:

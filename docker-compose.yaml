@@ -3,7 +3,6 @@
 
 x-environment: &environment
     APP_ENV: dev
-    APP_CACHE_ADAPTER: memory
 #    DATABASE_URL: "postgresql://postgres:local@db:5432/postgres?serverVersion=18&charset=utf8"
 
 services:
