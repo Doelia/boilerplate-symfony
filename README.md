@@ -73,7 +73,7 @@ Créer un fichier `.env.local` si besoin d'ajuster des variables du `.env`.
 
 Composer install :
 ```
-docker compose run app composer install
+docker compose run --rm app composer install
 ```
 
 Lancer le serveur:

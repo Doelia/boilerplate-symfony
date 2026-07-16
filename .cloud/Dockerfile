@@ -22,7 +22,7 @@ RUN install-php-extensions intl
 
 #######################################################################################################################
 ### STAGE LOCAL, pour le développement en local
-### Prévu pour utilation avec montage volume, donc pas de copie du code, composer install...
+### Prévu pour utilisation avec montage volume, donc pas de copie du code, composer install...
 
 FROM base_php AS local
 
