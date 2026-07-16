@@ -1,5 +1,10 @@
 FROM node:22 AS node
 
+
+#######################################################################################################################
+### STAGE DE BASE PHP
+### commun à tous les autres stages
+
 FROM dunglas/frankenphp:php8.5 AS base_php
 
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
@@ -14,6 +19,11 @@ RUN docker-php-ext-install pdo pdo_pgsql pgsql
 
 RUN install-php-extensions intl
 
+
+#######################################################################################################################
+### STAGE LOCAL, pour le développement en local
+### Prévu pour utilation avec montage volume, donc pas de copie du code, composer install...
+
 FROM base_php AS local
 
 COPY --link \
@@ -23,6 +33,11 @@ COPY --link \
 EXPOSE 8000
 
 CMD ["symfony", "server:start", "--allow-all-ip", "--no-tls", "--port=8000"]
+
+
+#######################################################################################################################
+### STAGE DE BUILD
+### pour la construction de l'image finale en utilisation standalone
 
 FROM base_php AS build_php
 
@@ -47,7 +62,8 @@ RUN php bin/console cache:clear
 RUN chmod 755 -R .
 RUN chmod 777 -R var/
 
-##############################################################################################$
+
+#######################################################################################################################
 ### STAGE DE VÉRIFICATION
 
 FROM build_php AS check
@@ -63,7 +79,9 @@ RUN ./vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=
 # Marqueur pour forcer la construction de ce stage si référencé
 RUN echo "ok" > /check.ok
 
-##############################################################################################$
+
+#######################################################################################################################
+### STAGE SERVEUR WEB (Avec FrankenPHP)
 
 FROM dunglas/frankenphp:php8.5-alpine AS run
 
@@ -88,7 +106,10 @@ ENV APP_ENV="prod"
 HEALTHCHECK --timeout=3s \
   CMD curl -f http://localhost/healthcheck || exit 1
 
-##############################################################################################$
+
+#######################################################################################################################
+### STAGE SPÉCIAL TESTS
+### Pour executer les tests en standalone, par la CI par exemple
 
 FROM run AS test
 
@@ -98,11 +119,11 @@ COPY .env.test .env.test
 COPY tests tests
 COPY phpunit.dist.xml phpunit.dist.xml
 
+
 ##############################################################################################$
-# Default target
+### TARGET PAR DEFAUT (Avec astuce pour vérifier le check)
 
 FROM run
 
-# Vérification si ce stage est référencé
 COPY --from=check /check.ok /check.ok
 
