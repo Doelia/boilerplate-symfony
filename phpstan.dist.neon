@@ -15,4 +15,7 @@ services:
         class: App\Tests\PHPStan\Rules\DomainDependencyUseRule
         tags:
             - phpstan.rules.rule
-
+    -
+        class: App\Tests\PHPStan\Rules\DomainTestDependencyUseRule
+        tags:
+            - phpstan.rules.rule
