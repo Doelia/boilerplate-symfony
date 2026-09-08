@@ -103,8 +103,10 @@ ENV CADDY_GLOBAL_OPTIONS="auto_https off"
 ENV SERVER_NAME=":80"
 ENV APP_ENV="prod"
 
+# Healthcheck activé uniquement si frankenphp est lancé.
+# Un override (messenger:consume, cron, ...) sera toujours considéré OK.
 HEALTHCHECK --timeout=3s \
-  CMD curl -f http://localhost/healthcheck || exit 1
+  CMD if ps | grep -v grep | grep -q frankenphp; then curl -f --max-time 3 http://localhost/healthcheck || exit 1; fi
 
 
 #######################################################################################################################
