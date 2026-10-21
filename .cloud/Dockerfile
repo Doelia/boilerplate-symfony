@@ -52,8 +52,7 @@ COPY bin bin
 COPY config config
 COPY public public
 COPY src src
-COPY migrations migrations
-COPY translations translations
+#COPY migrations migrations
 
 COPY .env .env
 
