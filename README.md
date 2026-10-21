@@ -6,7 +6,7 @@
 - Modèle Healthcheck
 - Système de cache pré-configuré
 - Config réseau : CORS, Trusted proxies
-- PHP.ini (Memory limit 1G, Upload 2M)
+- PHP.ini (Memory limit 128M, Upload 2M)
 - Outils de debug IP / Logs
 - Outils de devs : Profiler, Maker
 - Configuration PHPUnit, Tests HTTP via attribut `#[HttpTest]`
@@ -121,7 +121,7 @@ vendor/bin/phpcbf src
 php bin/phpunit
 
 # Executer un #[HttpTest] spécifique (Utiliser le name, ou class::method si pas de name)
-php bin/phpunit --filter MainController::index
+php bin/phpunit --filter HomeController::index
 ```
 
 ## Production
