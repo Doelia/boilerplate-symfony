@@ -34,7 +34,7 @@ git init
 
 - Vérifier que les dépendances sont sur les dernières versions : `composer outdated --direct`
 - Mettre à jour le composer.lock `composer update`
-- Changer la valeur par défaut de la var d'env `DEBUG_SECRETPASS=xxx` dans le .env
+- Les routes `/debug/*` sont désactivées par défaut en prod (`DEBUG_SECRETPASS` vide). Pour les activer, définir `DEBUG_SECRETPASS` dans les variables d'environnement de prod
 - Retirer cette partie du README.md et compléter le reste.
 - Choisir un seul mode de fonctionnement en local (docker ou sans docker) et supprimer l'autre partie. Préférer Docker si la stack est complexe (BDD, messenger, cache...), sinon sans docker est plus simple.
 - Supprimez/décommentez les parties du docker-compose.yaml non utilisées
