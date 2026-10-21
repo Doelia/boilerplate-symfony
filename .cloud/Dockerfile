@@ -9,15 +9,11 @@ FROM dunglas/frankenphp:php8.5 AS base_php
 
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 
-# ZIP
-RUN apt-get update && apt-get install -y libzip-dev
-RUN docker-php-ext-install zip
-
-# PSQL
-RUN apt-get install -y libpq-dev
-RUN docker-php-ext-install pdo pdo_pgsql pgsql
-
-RUN install-php-extensions intl
+RUN install-php-extensions \
+    zip \
+    pdo_pgsql \
+    pgsql \
+    intl
 
 
 #######################################################################################################################
@@ -85,7 +81,7 @@ RUN echo "ok" > /check.ok
 FROM dunglas/frankenphp:php8.5-alpine AS run
 
 RUN install-php-extensions \
-    pdo \
+    zip \
     pdo_pgsql \
     pgsql \
     intl
