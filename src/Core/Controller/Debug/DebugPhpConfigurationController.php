@@ -15,6 +15,7 @@ class DebugPhpConfigurationController extends AbstractController
     public function debugPhpConfiguration(): JsonResponse
     {
         return $this->json([
+            'php_version' => PHP_VERSION,
             'memory_limit' => ini_get('memory_limit'),
             'max_execution_time' => ini_get('max_execution_time'),
             'upload_max_filesize' => ini_get('upload_max_filesize'),
